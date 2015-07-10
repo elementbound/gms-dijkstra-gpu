@@ -34,7 +34,7 @@ the repository - maze.png and walls.png. The maze was generated with GIMP.
 
 ## Promises ##
 None :P This is something I spend a single afternoon with and rarely if ever look back. However, the code could 
-use some obvious improvements, so who knows. **However, you are free to work on it, too*.* I'd be glad to be 
+use some obvious improvements, so who knows. *However, you are free to work on it, too.* I'd be glad to be 
 notified if so :) 
 
 ## License ##
