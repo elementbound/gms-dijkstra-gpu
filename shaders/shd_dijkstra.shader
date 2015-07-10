@@ -36,32 +36,29 @@ float unpack (vec4 color) {
     return color.x * 256.0;
 }
 
+
 void main()
 {
     vec4 currentColor = texture2D(gm_BaseTexture, v_Texcoord);
     float currentObstacle = texture2D(uObstacles, v_Texcoord).r;
     
-    vec2 offsets[8];
-        offsets[0] = vec2(-1.0,  0.0);
-        offsets[1] = vec2(+1.0,  0.0);
-        offsets[2] = vec2( 0.0, -1.0);
-        offsets[3] = vec2( 0.0, +1.0);
-        
-        offsets[4] = vec2(-1.0, -1.0);
-        offsets[5] = vec2(+1.0, +1.0);
-        offsets[6] = vec2(+1.0, -1.0);
-        offsets[7] = vec2(-1.0, +1.0);
-        
-    vec4 colors[8];
-        colors[0] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[0]);
-        colors[1] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[1]);
-        colors[2] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[2]);
-        colors[3] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[3]);
-        
-        colors[4] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[4]);
-        colors[5] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[5]);
-        colors[6] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[6]);
-        colors[7] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[7]);
+	vec2 offsets[4];
+		offsets[0] = vec2(0.0, -1.0); 
+		offsets[1] = vec2(-1.0, 0.0); 
+		offsets[2] = vec2(1.0, 0.0); 
+		offsets[3] = vec2(0.0, 1.0); 
+
+	float weights[4];
+		weights[0] = 1.0000; 
+		weights[1] = 1.0000; 
+		weights[2] = 1.0000; 
+		weights[3] = 1.0000; 
+
+	vec4 colors[4];
+		colors[0] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[0]); 
+		colors[1] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[1]); 
+		colors[2] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[2]); 
+		colors[3] = texture2D(gm_BaseTexture, v_Texcoord + uCellSize * offsets[3]); 
         
     //Is an obstacle
     if(currentObstacle != 0.0) {
@@ -74,67 +71,39 @@ void main()
         gl_FragColor = currentColor;
         return;
     }
-     
-    //Blank itself, all neighbors blank -> not opened yet 
-    if(colors[0] == uBlankColor && colors[1] == uBlankColor && colors[2] == uBlankColor && colors[3] == uBlankColor){
-        gl_FragColor = currentColor;
-        return;
-    }
-    
-    if(colors[4] == uBlankColor && colors[5] == uBlankColor && colors[6] == uBlankColor && colors[7] == uBlankColor){
-        gl_FragColor = currentColor;
-        return;
-    }
+	
+	//Blank itself, all neighbors blank -> not opened yet 
+	if(colors[0] == uBlankColor || colors[1] == uBlankColor || colors[2] == uBlankColor || colors[3] == uBlankColor) {
+		gl_FragColor = currentColor;
+		return; }
         
     //
     
-    float obstacles[8]; 
-        obstacles[0] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[0]).r * obstacleHeight;
-        obstacles[1] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[1]).r * obstacleHeight;
-        obstacles[2] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[2]).r * obstacleHeight;
-        obstacles[3] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[3]).r * obstacleHeight;
-        
-        obstacles[4] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[4]).r * obstacleHeight;
-        obstacles[5] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[5]).r * obstacleHeight;
-        obstacles[6] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[6]).r * obstacleHeight;
-        obstacles[7] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[7]).r * obstacleHeight;
+	float obstacles[4];
+		obstacles[0] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[0]).r * obstacleHeight; 
+		obstacles[1] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[1]).r * obstacleHeight; 
+		obstacles[2] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[2]).r * obstacleHeight; 
+		obstacles[3] = texture2D(uObstacles, v_Texcoord + uCellSize * offsets[3]).r * obstacleHeight; 
     
-    float values[8];
-        values[0] = unpack(colors[0]) + obstacles[0];
-        values[1] = unpack(colors[1]) + obstacles[1];
-        values[2] = unpack(colors[2]) + obstacles[2];
-        values[3] = unpack(colors[3]) + obstacles[3];
-        
-        values[4] = unpack(colors[4]) * 1.4 + obstacles[4];
-        values[5] = unpack(colors[5]) * 1.4 + obstacles[5];
-        values[6] = unpack(colors[6]) * 1.4 + obstacles[6];
-        values[7] = unpack(colors[7]) * 1.4 + obstacles[7];
+	float values[4];
+		values[0] = unpack(colors[0])*weights[0] + obstacles[0]; 
+		values[1] = unpack(colors[1])*weights[1] + obstacles[1]; 
+		values[2] = unpack(colors[2])*weights[2] + obstacles[2]; 
+		values[3] = unpack(colors[3])*weights[3] + obstacles[3]; 
         
     float minValue = maxValue;
-        if(colors[0] != uBlankColor && obstacles[0] == 0.0)
-            minValue = min(values[0], minValue);
-            
-        if(colors[1] != uBlankColor && obstacles[1] == 0.0)
-            minValue = min(values[1], minValue);
-            
-        if(colors[2] != uBlankColor && obstacles[2] == 0.0)
-            minValue = min(values[2], minValue);
-            
-        if(colors[3] != uBlankColor && obstacles[3] == 0.0)
-            minValue = min(values[3], minValue);
-            
-        if(colors[4] != uBlankColor && obstacles[4] == 0.0)
-            minValue = min(values[4], minValue);
-            
-        if(colors[5] != uBlankColor && obstacles[5] == 0.0)
-            minValue = min(values[5], minValue);
-            
-        if(colors[6] != uBlankColor && obstacles[6] == 0.0)
-            minValue = min(values[6], minValue);
-            
-        if(colors[7] != uBlankColor && obstacles[7] == 0.0)
-            minValue = min(values[7], minValue);
-    
+		if(colors[0] != uBlankColor && obstacles[0] == 0.0) 
+			minValue = min(values[0], minValue);
+
+		if(colors[1] != uBlankColor && obstacles[1] == 0.0) 
+			minValue = min(values[1], minValue);
+
+		if(colors[2] != uBlankColor && obstacles[2] == 0.0) 
+			minValue = min(values[2], minValue);
+
+		if(colors[3] != uBlankColor && obstacles[3] == 0.0) 
+			minValue = min(values[3], minValue);
+
     gl_FragColor = pack(minValue + 1.0);
 }
 
