@@ -61,6 +61,9 @@ if(help_active) {
     txt += "RMB - Erase wall#";
     txt += "Q - Spread from mouse#";
     txt += "W - Walk from mouse#";
+    
+    txt += "#S - Save map#";
+    txt += "L - Load map#";
 }
 else {
     txt += "#Press F1 to toggle help#";
@@ -95,6 +98,29 @@ draw_text(0,0, txt);
           <argument>
             <kind>1</kind>
             <string>help_active = !help_active;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="27">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>game_end();
 </string>
           </argument>
         </arguments>

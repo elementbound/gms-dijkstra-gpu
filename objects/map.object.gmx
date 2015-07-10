@@ -229,6 +229,31 @@ with(instance_create(0,0, nav)) {
     
     surf = other.surf_pathing[0];
 }
+
+in_progress = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="83">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>surface_save(surf_obstacles, get_save_filename("PNG|*.png", "walls.png"));
 </string>
           </argument>
         </arguments>
@@ -264,6 +289,47 @@ surface_set_target(surf_pathing[0]);
     mark_color = 1; //TODO: check if this is in sync with shader's pack
     draw_point_colour(start_x, start_y, mark_color);
 surface_reset_target();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="76">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>surface_free(surf_obstacles);
+surface_free(surf_pathing[0]);
+surface_free(surf_pathing[1]);
+
+tmp = background_add(get_open_filename("PNG|*.png", "walls.png"), 0,0);
+cells_x = background_get_width(tmp);
+cells_y = background_get_height(tmp);
+
+surf_obstacles = surface_create(cells_x, cells_y);
+surf_pathing[0] = surface_create(cells_x, cells_y);
+surf_pathing[1] = surface_create(cells_x, cells_y);
+
+//
+
+surface_set_target(surf_obstacles);
+    draw_background(tmp, 0,0);
+surface_reset_target();
+
+background_delete(tmp);
 </string>
           </argument>
         </arguments>
