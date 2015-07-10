@@ -48,8 +48,8 @@ float unpack (vec4 color) {
 		if($x == 0 && $y == 0)
 			continue;
 		
-		if($x != 0 && $y != 0)
-			continue;
+		/*if($x != 0 && $y != 0)
+			continue;*/
 		
 		$offsets[] = array($x, $y);
 	}
@@ -62,6 +62,7 @@ float unpack (vec4 color) {
 void main()
 {
     vec4 currentColor = texture2D(gm_BaseTexture, v_Texcoord);
+	float currentValue = unpack(currentColor);
     float currentObstacle = texture2D(uObstacles, v_Texcoord).r;
     
 	<?php 
@@ -94,11 +95,11 @@ void main()
 	
 	//Blank itself, all neighbors blank -> not opened yet 
 <?php 
-	$bs = 4;
+	$bs = count($offsets);
 	for($i=0; $i<count($offsets); $i+=$bs) {
 		print "\tif(";
 		for($j=$i; $j<$i+$bs; $j++) {
-			if($i != $j) print " || ";
+			if($i != $j) print " && ";
 			print "colors[$j] == uBlankColor";
 		}
 		
@@ -123,12 +124,15 @@ void main()
 	?>
         
     float minValue = maxValue;
+	float stepWeight = 0.0;
 <?php
 	for($i=0; $i<count($offsets); $i++) {
-		print "\t\tif(colors[$i] != uBlankColor && obstacles[$i] == 0.0) \n".
-			  "\t\t\tminValue = min(values[$i], minValue);\n\n";
+		print "\t\tif(colors[$i] != uBlankColor && obstacles[$i] == 0.0) {\n".
+			  "\t\t\tminValue = min(values[$i], minValue);\n".
+			  "\t\t\tstepWeight=weights[$i];\n".
+			  "\t\t}\n";
 	}
 ?>
-    gl_FragColor = pack(minValue + 1.0);
+    gl_FragColor = pack(minValue + stepWeight);
 }
 

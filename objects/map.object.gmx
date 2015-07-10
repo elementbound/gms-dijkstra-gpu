@@ -189,10 +189,10 @@ surface_reset_target();
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if(in_progress) {
+            <string>//if(in_progress) {
     draw_surface_ext(surf_pathing[0], 0,0, cell_width,cell_height, 0,c_white,1);
     draw_circle(start_x*cell_width, start_y*cell_height, 4, 1);
-}
+//}
 
 draw_set_blend_mode(bm_add);
     draw_surface_ext(surf_obstacles, 0,0, cell_width,cell_height, 0,c_white,1);
