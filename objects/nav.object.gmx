@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-1</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,15 +25,15 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>help_active = 0;
+            <string>points = ds_list_create();
 
-draw_set_color(c_white);
+in_progress = 1;
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -50,34 +50,39 @@ draw_set_color(c_white);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var txt;
-    txt  = "Dijkstra algorithm with pixel shader#";
-    txt += "brought to you by ~elementbound#";
-    txt += "fps: ~"+string(fps)+"#";
+            <string>if(in_progress) {
+    ds_list_add(points, x,y);
     
-if(help_active) {
-    txt += "#";
-    txt += "LMB - Draw wall#";
-    txt += "RMB - Erase wall#";
-    txt += "Q - Spread from mouse#";
-    txt += "W - Walk from mouse#";
+    offsets = 0;
+    offsets[0,0] = +1; offsets[0,1] =  0;
+    offsets[1,0] = -1; offsets[1,1] =  0;
+    offsets[2,0] =  0; offsets[2,1] = +1;
+    offsets[3,0] =  0; offsets[3,1] = -1;
+    
+    minid = -1;
+    minval = surface_getpixel(surf, x,y);
+    for(var i=0; i&lt;4; i++) {
+        val = surface_getpixel(surf, x+offsets[i,0], y+offsets[i,1]); //TODO: out of bounds check
+        if(val &lt; minval) {
+            minid = i;
+            minval = val;
+        }
+    }
+    
+    if(minid == -1) {
+        in_progress = 0;
+        exit;
+    }
+    
+    x += offsets[minid,0];
+    y += offsets[minid,1];
 }
-else {
-    txt += "#Press F1 to toggle help#";
-}
-
-with(nav) {
-    txt += "#nav["+string(id)+"]#";
-    txt += "At ["+string(x)+","+string(y)+"]#";
-}
-
-draw_text(0,0, txt);
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="9" enumb="112">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -94,7 +99,14 @@ draw_text(0,0, txt);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>help_active = !help_active;
+            <string>draw_primitive_begin(pr_linestrip);
+    for(var i=0; i&lt;ds_list_size(points); i+=2) {
+        var cx = points[|i];
+        var cy = points[|i+1];
+        
+        draw_vertex((cx+0.5) * map.cell_width, (cy+0.5) * map.cell_height);
+    }
+draw_primitive_end();
 </string>
           </argument>
         </arguments>

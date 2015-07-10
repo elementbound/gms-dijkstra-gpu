@@ -23,6 +23,7 @@
   <objects name="objects">
     <object>objects\map</object>
     <object>objects\ui</object>
+    <object>objects\nav</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
