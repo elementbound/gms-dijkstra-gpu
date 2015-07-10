@@ -48,8 +48,8 @@ float unpack (vec4 color) {
 		if($x == 0 && $y == 0)
 			continue;
 		
-		/*if($x != 0 && $y != 0)
-			continue;*/
+		if($x != 0 && $y != 0)
+			continue;
 		
 		$offsets[] = array($x, $y);
 	}
@@ -127,10 +127,13 @@ void main()
 	float stepWeight = 0.0;
 <?php
 	for($i=0; $i<count($offsets); $i++) {
-		print "\t\tif(colors[$i] != uBlankColor && obstacles[$i] == 0.0) {\n".
-			  "\t\t\tminValue = min(values[$i], minValue);\n".
-			  "\t\t\tstepWeight=weights[$i];\n".
-			  "\t\t}\n";
+		print <<<EOT
+		if(colors[$i] != uBlankColor && obstacles[$i] == 0.0 && values[$i] < minValue) {
+			minValue = values[$i];
+			stepWeight = weights[$i];
+		}
+		
+EOT;
 	}
 ?>
     gl_FragColor = pack(minValue + stepWeight);
